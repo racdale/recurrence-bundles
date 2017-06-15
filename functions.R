@@ -14,22 +14,22 @@ windowEvents = function(dyad) {
   ixesA = unlist(lapply(a$A,function(x) {
     which(acodes==x)
   }))
-  plot(ixesP,ixesA,type='b',col=rgb(0,0,0,.5)) # state space
+  #plot(ixesP,ixesA,type='b',col=rgb(0,0,0,.5)) # state space
   
-  # add the 1 for the emotion
-  nSecs = 10
-  Alagged = matrix(0,nrow=nrow(dichsA)-nSecs+1,ncol=ncol(dichsA)*nSecs)
-  Plagged = matrix(0,nrow=nrow(dichsP)-nSecs+1,ncol=ncol(dichsP)*nSecs)
-  for (i in 1:length(ixesP)) {
-    dichsP[i,ixesP[i]] = 1
-    dichsA[i,ixesA[i]] = 1
-    if (i >= nSecs) {
-      Alagged[i-nSecs+1,] = as.vector(dichsA[(i-nSecs+1):i,])
-      Plagged[i-nSecs+1,] = as.vector(dichsP[(i-nSecs+1):i,])
-    }
-  }
-  lagged = cbind(Alagged,Plagged)
-  pcasol = princomp(lagged)
+  # add the 1 for the emotion; creates lagged version of matrix... 
+  #nSecs = 10
+  #Alagged = matrix(0,nrow=nrow(dichsA)-nSecs+1,ncol=ncol(dichsA)*nSecs)
+  #Plagged = matrix(0,nrow=nrow(dichsP)-nSecs+1,ncol=ncol(dichsP)*nSecs)
+  #for (i in 1:length(ixesP)) {
+  #  dichsP[i,ixesP[i]] = 1
+  #  dichsA[i,ixesA[i]] = 1
+  #  if (i >= nSecs) {
+  #    Alagged[i-nSecs+1,] = as.vector(dichsA[(i-nSecs+1):i,])
+  #    Plagged[i-nSecs+1,] = as.vector(dichsP[(i-nSecs+1):i,])
+  #  }
+  #}
+  #lagged = cbind(Alagged,Plagged)
+  #pcasol = princomp(lagged)
   
   # put 'em together
   allDat = cbind(dichsP,dichsA)
@@ -47,7 +47,7 @@ windowEvents = function(dyad) {
 
 loadFile = function(path,re.codes='SPAFF categories.csv') {
    # import sample dyad
-   a = read.table(path,header=T,sep='\t',stringsAsFactors=FALSE)
+   a = read.table(path,header=T,sep='\t',stringsAsFactors=FALSE,skip=1)
    # seconds into interaction, parent, adolescent
    colnames(a) = list('s','P.orig','A.orig')
    # a$P = gsub('P ','',a$P.orig) # remove designation (for overlap)
@@ -56,7 +56,7 @@ loadFile = function(path,re.codes='SPAFF categories.csv') {
    # let's recode using SPAFF categories
    codes = read.csv(re.codes,header=T,stringsAsFactors=F)
    a$P = unlist(apply(a,1,function(x) {
-     ix = which(codes$SPAFF.CODE==x['P.orig'])
+     ix = which(tolower(codes$SPAFF.CODE)==tolower(x['P.orig']))
      if (length(ix)==0) {
        print(paste('WTF:',x['P.orig']))
      } else {
@@ -64,7 +64,7 @@ loadFile = function(path,re.codes='SPAFF categories.csv') {
      }
    }))
    a$A = unlist(apply(a,1,function(x) {
-     ix = which(codes$SPAFF.CODE==x['A.orig'])
+     ix = which(tolower(codes$SPAFF.CODE)==tolower(x['A.orig']))
      if (length(ix)==0) {
        print(paste('WTF:',x['A.orig']))
      } else {
