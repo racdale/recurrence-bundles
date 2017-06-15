@@ -1,9 +1,35 @@
- 
+# to get CSSR at command line: ./CSSR alphabet.txt datafile.txt 2
+library(caTools)
+library(zoo)
 
-setwd('~/Dropbox/new.projects/recurrence-bundles')
+setwd('~/Dropbox/new.projects/recurrence-bundles') 
+# import sample dyad
 a = read.table('low-satisfaction-dyad.txt',header=T,sep='\t',stringsAsFactors=FALSE)
-colnames(a) = list('s','P','A')
-pcodes = unique(a$P)
+# seconds into interaction, parent, adolescent
+colnames(a) = list('s','P.orig','A.orig')
+# a$P = gsub('P ','',a$P.orig) # remove designation (for overlap)
+# a$A = gsub('A ','',a$A.orig)
+
+# let's recode using SPAFF categories
+codes = read.csv('SPAFF categories.csv',header=T,stringsAsFactors=F)
+a$P = unlist(apply(a,1,function(x) {
+  ix = which(codes$SPAFF.CODE==x['P.orig'])
+  if (length(ix)==0) {
+    print(paste('WTF:',x['P.orig']))
+  } else {
+    return(codes$Category[ix])
+  }
+}))
+a$A = unlist(apply(a,1,function(x) {
+  ix = which(codes$SPAFF.CODE==x['A.orig'])
+  if (length(ix)==0) {
+    print(paste('WTF:',x['A.orig']))
+  } else {
+    return(codes$Category[ix])
+  }
+}))
+
+pcodes = unique(a$P) # unique SPAFF codes shown in this interaction
 acodes = unique(a$A)
 
 # the dichotomous codes
@@ -34,32 +60,18 @@ for (i in 1:length(ixesP)) {
 lagged = cbind(Alagged,Plagged)
 pcasol = princomp(lagged)
 
-
-# get a rolling mean of 30s
-library(caTools)
-library(zoo)
-
-
+# put 'em together
 allDat = cbind(dichsP,dichsA)
 
-
-
-
-
-
+# get new score based on inversion--mean
 for (i in 1:dim(allDat)[2]) {
   allDat[,i] = allDat[,i] / mean(allDat[,i])
 }
 
+# rolling mean of 60 seconds
+dat = runmean(allDat,k=60)
 
-
-
-dat = runmean(allDat,k=100)
-cc = 1-cor(t(dat))
-dissim = as.dist(cc)
-plot(hclust(dissim),col=rgb(allDat[,1],allDat[,2],allDat[,3]))
-
-# get the bundles!
+# reduce the data...
 mypca = princomp(dat)
 
 # seek bend
@@ -71,13 +83,8 @@ plot(mypca$scores[,1],mypca$scores[,2],type='b')
 # see how emotions load
 row.names(mypca$loadings) = c(pcodes,acodes)
 
-plot(mypca$loadings[,1],mypca$loadings[,2],col='white')
-text(mypca$loadings[,1],mypca$loadings[,2],c(pcodes,acodes))
-
-plot(mypca$loadings[,3],mypca$loadings[,4],col='white')
-text(mypca$loadings[,3],mypca$loadings[,4],c(pcodes,acodes))
-
-
+write.table(file='alphabet_txt',t(unique(ixesP)),row.names=F,col.names=F)
+write.table(file='data_txt',t(ixesP),row.names=F,col.names=F)
 
 
 
