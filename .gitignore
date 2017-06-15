@@ -9,5 +9,6 @@
 ehthumbs.db
 Thumbs.db
 .Rhistory
-results
+results/*
+results/
 Key Grouping Variables.csv
