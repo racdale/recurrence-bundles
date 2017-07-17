@@ -1,0 +1,24 @@
+State number: 0
+111
+221
+211
+1111
+2221
+2211
+2111
+distribution: P(1) = 0.996602	P(2) = 0.00339847	
+transitions: T(1) = 0	T(2) = 1	
+P(state): 0.970346
+
+State number: 1
+112
+122
+222
+1112
+1122
+1222
+2222
+distribution: P(1) = 0.111111	P(2) = 0.888889	
+transitions: T(1) = 0	T(2) = 1	
+P(state): 0.029654
+

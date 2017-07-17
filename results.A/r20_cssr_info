@@ -1,0 +1,13 @@
+Alphabet File: alphabet_txt
+Data File: r20_cssr
+History Length: 4
+Significance Level: 0.001
+Multiline Mode: false
+Chi-squared test used: false
+Alphabet Size: 3
+Relative Entropy: 0
+Relative Entropy Rate: 0.0132425
+Statistical Complexity: 0.601121
+Entropy Rate: 0.235155
+Variation: 0.49055
+Number of Inferred States: 3
